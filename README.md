@@ -1,0 +1,2 @@
+# travelpolicy_HoshinoBot
+一个适用于HoshinoBot的疫情出行政策获取插件
