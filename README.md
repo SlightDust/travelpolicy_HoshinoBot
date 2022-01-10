@@ -27,4 +27,4 @@ MODULES_ON = {
 2022/01/10 大概能用了。年关将至，大家出行注意安全，做好个人防护。
 
 # 免责声明
-数据来源：[https://r.inews.qq.com/api/trackmap/citylist?](https://r.inews.qq.com/api/trackmap/citylist?)
+数据来源：[https://news.qq.com/hdh5/sftravel.htm#/](https://news.qq.com/hdh5/sftravel.htm#/)
