@@ -44,10 +44,15 @@ async def get_policy(_from, to):
     if policy['status'] == 0 and policy['message'] == "success":
         data_leave = policy['result']['data'][0]
         data_to = policy['result']['data'][1]
-        msg += f"{_from}离开政策：\n{data_leave['leave_policy'].strip()}（于{data_leave['leave_policy_date']}更新）"
-        msg += "\n"
-        msg += f"{to}进入政策：\n{data_to['back_policy'].strip()}（于{data_to['back_policy_date']}更新）"
-        msg += "\n"
+        if _from == to and data_leave['leave_policy'].strip() == data_to['back_policy'].strip():
+            msg += f"{_from}出入政策：\n"
+            msg += f"{data_to['back_policy'].strip()}（于{data_to['back_policy_date']}更新）"
+            msg += "\n"
+        else:
+            msg += f"{_from}离开政策：\n{data_leave['leave_policy'].strip()}（于{data_leave['leave_policy_date']}更新）"
+            msg += "\n"
+            msg += f"{to}进入政策：\n{data_to['back_policy'].strip()}（于{data_to['back_policy_date']}更新）"
+            msg += "\n"
         msg += f"{to}酒店政策：\n{data_to['stay_info'].strip()}"
         msg += "\n"
         msg += "免责声明：以上所有数据来源于https://news.qq.com/hdh5/sftravel.htm#/"
@@ -82,11 +87,14 @@ async def travelpolicy(bot, ev):
         return
     elif len(ev.message.extract_plain_text().split()) == 1:
         _from = to = ev.message.extract_plain_text().split()[0]
-    else:
+    elif len(ev.message.extract_plain_text().split()) == 2:
         _from, to = ev.message.extract_plain_text().split()
         if _from == to:
             await bot.send(ev, "搁这儿原地tp呢")
-
+    else:
+        await bot.send(ev, "目前仅支持两个城市！")
+        return
+                
     msg = await get_policy(_from, to)
     flmt.start_cd(ev['user_id'])
     if "错误" in msg:
@@ -98,5 +106,11 @@ async def travelpolicy(bot, ev):
         li.append(i)
     bot_info = await bot.get_login_info()
     bot_name = bot_info['nickname']
+    # print(li)
     forward_msg = render_forward_msg(li, uid=ev.self_id, name=bot_name)
-    await bot.send_group_forward_msg(group_id=ev.group_id, messages=forward_msg)
+    try:
+        await bot.send_group_forward_msg(group_id=ev.group_id, messages=forward_msg)
+    except:
+        await bot.send(ev,"转发消息疑似被风控，尝试直接发送。")
+        # 如果转发消息被风控，则直接发送
+        await bot.send(ev,msg)
